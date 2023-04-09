@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +47,7 @@
     </div>
 
     <script>
+        // Function to send a request to the OpenAI API
         function sendRequest(data, apiKey) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
@@ -65,6 +67,7 @@
             });
         }
 
+        // Event listener for the submit button
         document.getElementById("submit").addEventListener("click", function() {
             const role = document.getElementById("role").value;
             const userInput = document.getElementById("userInput").value;
@@ -85,7 +88,20 @@
             sendRequest(data, apiKey)
                 .then(response => {
                     console.log(response);
-                    // Display the assistant's response and add new input fields for the next request
+                    // Display the assistant's response
+                    const assistantResponse = response.choices[0].message.content;
+                    const responseDiv = document.createElement("div");
+                    responseDiv.innerHTML = `<label>Assistant:</label> ${assistantResponse}`;
+                    document.getElementById("interactions").appendChild(responseDiv);
+
+                    // Add new input fields for the next request
+                    const newRoleDiv = document.createElement("div");
+                    newRoleDiv.innerHTML = `<label for="role">Role:</label><input type="text" id="role" value="user">`;
+                    document.getElementById("interactions").appendChild(newRoleDiv);
+
+                    const newUserInputDiv = document.createElement("div");
+                    newUserInputDiv.innerHTML = `<label for="userInput">User:</label><input type="text" id="userInput">`;
+                    document.getElementById("interactions").appendChild(newUserInputDiv);
                 })
                 .catch(error => {
                     console.error("Error:", error);
