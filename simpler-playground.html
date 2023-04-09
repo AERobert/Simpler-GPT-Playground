@@ -14,21 +14,23 @@
     <h1>OpenAI Chat API</h1>
     <div>
         <h2>Interactions</h2>
-        <div id="interactions">
-            <div>
-                <label for="role">Role:</label>
-                <input type="text" id="role" value="user">
-            </div>
-            <div>
-                <label for="userInput">User:</label>
-                <input type="text" id="userInput">
-            </div>
-            <div>
-                <label for="assistantResponse">Assistant:</label>
-                <textarea id="assistantResponse" readonly></textarea>
-            </div>
-            <button id="submit">Submit</button>
-        </div>
+        <ol id="interactions">
+            <li>
+                <div>
+                    <label for="role">Role:</label>
+                    <input type="text" class="role" value="user">
+                </div>
+                <div>
+                    <label for="userInput">User:</label>
+                    <input type="text" class="userInput">
+                </div>
+                <div>
+                    <label for="assistantResponse">Assistant:</label>
+                    <textarea class="assistantResponse" readonly></textarea>
+                </div>
+            </li>
+        </ol>
+        <button id="submit">Submit</button>
     </div>
     <div>
         <h2>
@@ -59,9 +61,21 @@
             </div>
         </div>
     </div>
+    <div>
+        <h2>Export/Import</h2>
+        <button id="export">Export</button>
+        <input type="file" id="import" accept=".json">
+    </div>
 
     <script>
-        // Function to send a request to the OpenAI API
+        let requestData = {
+            model: "",
+            messages: [],
+            temperature: 0,
+            top_p: 0,
+            max_tokens: 0
+        };
+
         function sendRequest(data, apiKey) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
@@ -81,10 +95,9 @@
             });
         }
 
-        // Event listener for the submit button
         document.getElementById("submit").addEventListener("click", function() {
-            const role = document.getElementById("role").value;
-            const userInput = document.getElementById("userInput").value;
+            const role = document.querySelector(".role").value;
+            const userInput = document.querySelector(".userInput").value;
             const apiKey = document.getElementById("apiKey").value;
             const model = document.getElementById("model").value;
             const temperature = document.getElementById("temperature").value;
@@ -102,39 +115,42 @@
             sendRequest(data, apiKey)
                 .then(response => {
                     console.log(response);
-                    // Display the assistant's response
                     const assistantResponse = response.choices[0].message.content;
-                    document.getElementById("assistantResponse").value = assistantResponse;
+                    document.querySelector(".assistantResponse").value = assistantResponse;
 
-                    // Add new input fields for the next request
-                    const newRoleDiv = document.createElement("div");
-                    newRoleDiv.innerHTML = `<label for="role">Role:</label><input type="text" id="role" value="user">`;
-                    document.getElementById("interactions").appendChild(newRoleDiv);
-
-                    const newUserInputDiv = document.createElement("div");
-                    newUserInputDiv.innerHTML = `<label for="userInput">User:</label><input type="text" id="userInput">`;
-                    document.getElementById("interactions").appendChild(newUserInputDiv);
+                    const newItem = document.createElement("li");
+                    newItem.innerHTML = `
+                        <div>
+                            <label for="role">Role:</label>
+                            <input type="text" class="role" value="user">
+                        </div>
+                        <div>
+                            <label for="userInput">User:</label>
+                            <input type="text" class="userInput">
+                        </div>
+                        <div>
+                            <label for="assistantResponse">Assistant:</label>
+                            <textarea class="assistantResponse" readonly></textarea>
+                        </div>`;
+                    document.getElementById("interactions").appendChild(newItem);
                 })
                 .catch(error => {
                     console.error("Error:", error);
                 });
         });
 
-        // Event listener for the show API key checkbox
         document.getElementById("showApiKey").addEventListener("change", function() {
             const apiKeyInput = document.getElementById("apiKey");
             apiKeyInput.type = this.checked ? "text" : "password";
             localStorage.setItem("showApiKey", this.checked);
         });
 
-        // Event listener for the toggle parameters button
         document.getElementById("toggleParameters").addEventListener("click", function() {
             const parametersDiv = document.getElementById("parameters");
             parametersDiv.classList.toggle("hidden");
             this.textContent = parametersDiv.classList.contains("hidden") ? "+" : "-";
         });
 
-        // Load API key and show API key checkbox state from local storage
         document.addEventListener("DOMContentLoaded", function() {
             const apiKey = localStorage.getItem("apiKey");
             if (apiKey) {
@@ -146,7 +162,6 @@
             document.getElementById("apiKey").type = showApiKey ? "text" : "password";
         });
 
-        // Save API key to local storage before leaving the page
         window.addEventListener("beforeunload", function() {
             const apiKey = document.getElementById("apiKey").value;
             localStorage.setItem("apiKey", apiKey);
@@ -154,3 +169,4 @@
     </script>
 </body>
 </html>
+```
