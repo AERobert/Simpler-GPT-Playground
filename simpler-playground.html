@@ -1,10 +1,14 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenAI Chat API</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>OpenAI Chat API</h1>
@@ -19,30 +23,40 @@
                 <label for="userInput">User:</label>
                 <input type="text" id="userInput">
             </div>
+            <div>
+                <label for="assistantResponse">Assistant:</label>
+                <textarea id="assistantResponse" readonly></textarea>
+            </div>
             <button id="submit">Submit</button>
         </div>
     </div>
     <div>
-        <h2>Parameters</h2>
-        <div>
-            <label for="apiKey">API Key:</label>
-            <input type="password" id="apiKey">
-        </div>
-        <div>
-            <label for="model">Model:</label>
-            <input type="text" id="model" value="gpt-3.5-turbo">
-        </div>
-        <div>
-            <label for="temperature">Temperature:</label>
-            <input type="number" id="temperature" value="1">
-        </div>
-        <div>
-            <label for="topP">Top P:</label>
-            <input type="number" id="topP" value="1">
-        </div>
-        <div>
-            <label for="maxTokens">Max Tokens:</label>
-            <input type="number" id="maxTokens">
+        <h2>
+            <button id="toggleParameters">+</button>
+            Parameters
+        </h2>
+        <div id="parameters" class="hidden">
+            <div>
+                <label for="apiKey">API Key:</label>
+                <input type="password" id="apiKey">
+                <input type="checkbox" id="showApiKey"> Show API Key
+            </div>
+            <div>
+                <label for="model">Model:</label>
+                <input type="text" id="model" value="gpt-3.5-turbo">
+            </div>
+            <div>
+                <label for="temperature">Temperature:</label>
+                <input type="number" id="temperature" value="1">
+            </div>
+            <div>
+                <label for="topP">Top P:</label>
+                <input type="number" id="topP" value="1">
+            </div>
+            <div>
+                <label for="maxTokens">Max Tokens:</label>
+                <input type="number" id="maxTokens">
+            </div>
         </div>
     </div>
 
@@ -90,9 +104,7 @@
                     console.log(response);
                     // Display the assistant's response
                     const assistantResponse = response.choices[0].message.content;
-                    const responseDiv = document.createElement("div");
-                    responseDiv.innerHTML = `<label>Assistant:</label> ${assistantResponse}`;
-                    document.getElementById("interactions").appendChild(responseDiv);
+                    document.getElementById("assistantResponse").value = assistantResponse;
 
                     // Add new input fields for the next request
                     const newRoleDiv = document.createElement("div");
@@ -106,6 +118,38 @@
                 .catch(error => {
                     console.error("Error:", error);
                 });
+        });
+
+        // Event listener for the show API key checkbox
+        document.getElementById("showApiKey").addEventListener("change", function() {
+            const apiKeyInput = document.getElementById("apiKey");
+            apiKeyInput.type = this.checked ? "text" : "password";
+            localStorage.setItem("showApiKey", this.checked);
+        });
+
+        // Event listener for the toggle parameters button
+        document.getElementById("toggleParameters").addEventListener("click", function() {
+            const parametersDiv = document.getElementById("parameters");
+            parametersDiv.classList.toggle("hidden");
+            this.textContent = parametersDiv.classList.contains("hidden") ? "+" : "-";
+        });
+
+        // Load API key and show API key checkbox state from local storage
+        document.addEventListener("DOMContentLoaded", function() {
+            const apiKey = localStorage.getItem("apiKey");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+
+            const showApiKey = localStorage.getItem("showApiKey") === "true";
+            document.getElementById("showApiKey").checked = showApiKey;
+            document.getElementById("apiKey").type = showApiKey ? "text" : "password";
+        });
+
+        // Save API key to local storage before leaving the page
+        window.addEventListener("beforeunload", function() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("apiKey", apiKey);
         });
     </script>
 </body>
