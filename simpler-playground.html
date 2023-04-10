@@ -26,7 +26,7 @@
                 </div>
                 <div>
                     <label for="assistantResponse">Assistant:</label>
-                    <textarea class="assistantResponse" readonly></textarea>
+                    <textarea class="assistantResponse"></textarea>
                 </div>
             </li>
         </ol>
@@ -95,24 +95,40 @@
             });
         }
 
+        function exportToFile(filename, text) {
+            const element = document.createElement("a");
+            element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+            element.setAttribute("download", filename);
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
         document.getElementById("submit").addEventListener("click", function() {
-            const role = document.querySelector(".role").value;
-            const userInput = document.querySelector(".userInput").value;
             const apiKey = document.getElementById("apiKey").value;
             const model = document.getElementById("model").value;
             const temperature = document.getElementById("temperature").value;
             const topP = document.getElementById("topP").value;
             const maxTokens = document.getElementById("maxTokens").value;
 
-            const data = {
-                model: model,
-                messages: [{ role: role, content: userInput }],
-                temperature: parseFloat(temperature),
-                top_p: parseFloat(topP),
-                max_tokens: parseInt(maxTokens)
-            };
+            requestData.model = model;
+            requestData.temperature = parseFloat(temperature);
+            requestData.top_p = parseFloat(topP);
+            requestData.max_tokens = parseInt(maxTokens);
 
-            sendRequest(data, apiKey)
+            requestData.messages = [];
+            const interactions = document.getElementById("interactions").children;
+            for (const interaction of interactions) {
+                const role = interaction.querySelector(".role").value;
+                const userInput = interaction.querySelector(".userInput").value;
+                const assistantResponse = interaction.querySelector(".assistantResponse").value;
+
+                requestData.messages.push({ role: role, content: userInput });
+                requestData.messages.push({ role: "assistant", content: assistantResponse });
+            }
+
+            sendRequest(requestData, apiKey)
                 .then(response => {
                     console.log(response);
                     const assistantResponse = response.choices[0].message.content;
@@ -130,13 +146,17 @@
                         </div>
                         <div>
                             <label for="assistantResponse">Assistant:</label>
-                            <textarea class="assistantResponse" readonly></textarea>
+                            <textarea class="assistantResponse"></textarea>
                         </div>`;
                     document.getElementById("interactions").appendChild(newItem);
                 })
                 .catch(error => {
                     console.error("Error:", error);
                 });
+        });
+
+        document.getElementById("export").addEventListener("click", function() {
+            exportToFile("request_data.json", JSON.stringify(requestData));
         });
 
         document.getElementById("showApiKey").addEventListener("change", function() {
@@ -169,4 +189,3 @@
     </script>
 </body>
 </html>
-```
