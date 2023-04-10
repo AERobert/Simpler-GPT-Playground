@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI Chat API</title>
+    <title>Simpler OpenAI Chat API interface</title>
     <style>
         .hidden {
             display: none;
@@ -11,22 +11,22 @@
     </style>
 </head>
 <body>
-    <h1>OpenAI Chat API</h1>
+    <h1>Simpler OpenAI Chat API interface</h1>
     <div>
         <h2>
-            <button id="toggleInteractions">-</button>
             Interactions
         </h2>
-        <div id="interactionsContainer">
+        <button id="toggleInteractions">-</button>
+            <div id="interactionsContainer">
             <ol id="interactions">
                 <li>
                     <div>
                         <label for="role">Role:</label>
-                        <input type="text" class="role" value="user">
-                    </div>
+                        <textarea class="role"></textarea>
+                   </div>
                     <div>
                         <label for="userInput">User:</label>
-                        <input type="text" class="userInput">
+                        <textarea class="userInput"></textarea>
                     </div>
                     <div>
                         <label for="assistantResponse">Assistant:</label>
@@ -39,10 +39,10 @@
     </div>
     <div>
         <h2>
-            <button id="toggleParameters">+</button>
             Parameters
         </h2>
-        <div id="parameters" class="hidden">
+        <button id="toggleParameters">+</button>
+            <div id="parameters" class="hidden">
             <div>
                 <label for="apiKey">API Key:</label>
                 <input type="password" id="apiKey">
@@ -54,7 +54,7 @@
             </div>
             <div>
                 <label for="temperature">Temperature:</label>
-                <input type="number" id="temperature" value="1">
+                <input type="number" id="temperature" value="0.7">
             </div>
             <div>
                 <label for="topP">Top P:</label>
@@ -62,20 +62,20 @@
             </div>
             <div>
                 <label for="maxTokens">Max Tokens:</label>
-                <input type="number" id="maxTokens">
+                <input type="number" id="maxTokens" value="256">
             </div>
         </div>
     </div>
     <div>
         <h2>
-            <button id="toggleImportExport">+</button>
             Export/Import
         </h2>
+            <button id="toggleImportExport">+</button>
         <div id="importExport" class="hidden">
             <label for="filename">Filename:</label>
             <input type="text" id="filename" value="requestData.json">
             <button id="export">Export</button>
-            <input type="file" id="import" accept=".json">
+            <input type="file" id="import">
             <button id="importBtn">Import</button>
         </div>
     </div>
@@ -174,11 +174,11 @@
                     newItem.innerHTML = `
                         <div>
                             <label for="role">Role:</label>
-                            <input type="text" class="role" value="user">
+                            <textarea type="text" class="role">
                         </div>
                         <div>
                             <label for="userInput">User:</label>
-                            <input type="text" class="userInput">
+                            <textarea type="text" class="userInput"></textarea>
                         </div>
                         <div>
                             <label for="assistantResponse">Assistant:</label>
