@@ -222,11 +222,11 @@
                         newItem.innerHTML = `
                             <div>
                                 <label for="role">Role:</label>
-                                <input type="text" class="role" value="${requestData.messages[i].role}">
+                                <textarea class="role">${requestData.messages[i].role}</textarea>
                             </div>
                             <div>
                                 <label for="userInput">User:</label>
-                                <input type="text" class="userInput" value="${requestData.messages[i].content}">
+                                <textarea class="userInput">${requestData.messages[i].content}"</textarea>
                             </div>
                             <div>
                                 <label for="assistantResponse">Assistant:</label>
