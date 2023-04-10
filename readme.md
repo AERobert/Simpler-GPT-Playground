@@ -35,3 +35,7 @@ This project provides a simple HTML interface for interacting with OpenAI's Chat
 ## Disclaimer
 
 Please note that this project is not affiliated with or endorsed by OpenAI. Use this interface at your own risk, and make sure to follow OpenAI's usage guidelines and terms of service.
+
+## Licence
+
+This project is licenced under the MIT License. (Refer to the license file for more information.)
