@@ -94,7 +94,7 @@
             requestData.temperature = parseFloat(document.getElementById("temperature").value);
             requestData.top_p = parseFloat(document.getElementById("topP").value);
             requestData.max_tokens = parseInt(document.getElementById("maxTokens").value);
-    requestData.messages.push({"role":"system", "content":document.getElementById('systemInput')});
+    requestData.messages.push({"role":"system", "content":document.getElementById('systemInput').value});
             const interactions = document.getElementById("interactions").children;
             for (const interaction of interactions) {
                 const userInput = interaction.querySelector(".userInput").value;
