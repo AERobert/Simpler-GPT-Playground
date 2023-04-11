@@ -200,11 +200,11 @@
                     document.getElementById("temperature").value = requestData.temperature;
                     document.getElementById("topP").value = requestData.top_p;
                     document.getElementById("maxTokens").value = requestData.max_tokens;
-
+        document.getElementById('systemInput').value = requestData.messages[0].content
                     const interactionsList = document.getElementById("interactions");
                     interactionsList.innerHTML = "";
 
-                    for (let i = 0; i < requestData.messages.length; i += 2) {
+                    for (let i = 1; i < requestData.messages.length; i += 2) {
                         const newItem = document.createElement("li");
                         newItem.innerHTML = `
                             <div>
