@@ -12,8 +12,8 @@ This project provides a simple HTML interface for interacting with OpenAI's Chat
 
 ## How to use
 
-1. Download the `index.html` file from this repository.
-2. Open the `index.html` file in a modern web browser (e.g., Google Chrome, Mozilla Firefox, Microsoft Edge).
+1. Download the `simpler-playground.html` file from this repository.
+2. Open the `simpler-playground.html` file in a modern web browser (e.g., Google Chrome, Mozilla Firefox, Microsoft Edge).
 3. Enter your OpenAI API key in the "API Key" field.
 4. Customize the model and other parameters as needed.
 5. Enter the role and user input for the first interaction.
