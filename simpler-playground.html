@@ -85,20 +85,17 @@
 
     <script>
         function getRequestData() {
-            const requestData = {
-                model: "",
-                messages: [],
-                temperature: 0,
-                top_p: 0,
-                max_tokens: 0
-            };
-
-            requestData.model = document.getElementById("model").value;
+            const requestData = {};
+        requestData.model = document.getElementById("model").value;
             requestData.temperature = parseFloat(document.getElementById("temperature").value);
             requestData.top_p = parseFloat(document.getElementById("topP").value);
             requestData.max_tokens = parseInt(document.getElementById("maxTokens").value);
+        requestData.messages = [];
     requestData.messages.push({"role":"system", "content":document.getElementById('systemInput').value});
-            const interactions = document.getElementById("interactions").children;
+            
+
+          removeEmptyInteractions();
+const interactions = document.getElementById("interactions").children;
             for (const interaction of interactions) {
                 const userInput = interaction.querySelector(".userInput").value;
                 const assistantResponse = interaction.querySelector(".assistantResponse").value;
@@ -168,6 +165,8 @@
 
             function removeEmptyInteractions(){
 const interactions = document.getElementById("interactions").children;
+              if(interactions.length == 1){
+                  return;};
             for (let i = 1; i < interactions.length; i++) {
             interaction = interactions[i];
                 const userInput = interaction.querySelector(".userInput").value;
