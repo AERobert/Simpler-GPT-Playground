@@ -208,6 +208,7 @@
                 .then(response => {
                     console.log(response);
                     const assistantResponse = response.choices[0].message.content;
+            removeEmptyInteractions();
                     const lastInteraction = getInteraction(document.getElementById('interactions').children.length - 1);
                     if (lastInteraction.assistantResponse.value) {
                         addInteraction("", assistantResponse);
@@ -226,6 +227,7 @@
 
         document.getElementById("export").addEventListener("click", function () {
             const filename = document.getElementById("filename").value;
+            removeEmptyInteractions();
             const requestData = getRequestData();
             exportToFile(filename, JSON.stringify(requestData));
         });
