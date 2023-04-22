@@ -45,7 +45,7 @@
             <div id="parameters" class="hidden">
             <div>
                 <label for="apiKey">API Key:</label>
-                <input type="password" id="apiKey">
+                <input type="password" id="apiKey" required>
                 <input type="checkbox" id="showApiKey"> Show API Key
             </div>
             <div>
@@ -154,7 +154,9 @@
 
         document.getElementById("submit").addEventListener("click", function() {
             const apiKey = document.getElementById("apiKey").value;
-
+        if(!apiKey){
+            alert('Please enter API key');
+            return;};
             const requestData = getRequestData();
 
             sendRequest(requestData, apiKey)
