@@ -13,17 +13,15 @@
 <body>
     <h1>Simpler OpenAI Chat API interface</h1>
     <div>
-        <h2>
-            Interactions
-        </h2>
+        <h2>Interactions</h2>
         <button id="toggleInteractions">-</button>
-            <div id="interactionsContainer">
-<div>
-                        <label for="systemInput">system:</label>
-                        <textarea id="systemInput">You are a helpful assistant.</textarea>
-                   </div>
+        <div id="interactionsContainer">
+            <div>
+                <label for="systemInput">system:</label>
+                <textarea id="systemInput">You are a helpful assistant.</textarea>
+            </div>
             <ol id="interactions">
-<li>
+                <li>
                     <div>
                         <label for="userInput">User:</label>
                         <textarea class="userInput"></textarea>
@@ -38,11 +36,9 @@
         </div>
     </div>
     <div>
-        <h2>
-            Parameters
-        </h2>
+        <h2>Parameters</h2>
         <button id="toggleParameters">+</button>
-            <div id="parameters" class="hidden">
+        <div id="parameters" class="hidden">
             <div>
                 <label for="apiKey">API Key:</label>
                 <input type="password" id="apiKey" required>
@@ -52,7 +48,7 @@
                 <label for="model">Model:</label>
                 <select id="model">
                     <option value="gpt-3.5-turbo" selected>gpt-3.5-turbo</option>
-                    <option>gpt-4</option value="gpt-4">
+                    <option value="gpt-4">gpt-4</option>
                 </select>
             </div>
             <div>
@@ -70,10 +66,8 @@
         </div>
     </div>
     <div>
-        <h2>
-            Export/Import
-        </h2>
-            <button id="toggleImportExport">+</button>
+        <h2>Export/Import</h2>
+        <button id="toggleImportExport">+</button>
         <div id="importExport" class="hidden">
             <label for="filename">Filename:</label>
             <input type="text" id="filename" value="requestData.json">
@@ -84,17 +78,59 @@
     </div>
 
     <script>
+        // Remove empty interactions from the list
+        function removeEmptyInteractions() {
+            const interactions = document.getElementById("interactions").children;
+            if (interactions.length === 1) {
+                return;
+            }
+            for (let i = 1; i < interactions.length; i++) {
+                const interaction = getInteraction(i);
+                const userInput = interaction.userInput;
+                const assistantResponse = interaction.assistantResponse;
+                if (!interaction.userInput.value && !interaction.assistantResponse.value) {
+                    interaction.interaction.remove();
+                }
+            }
+        }
+
+        // Get interaction details by index
+        function getInteraction(index) {
+            const interactions = document.getElementById("interactions").children;
+            const interaction = {};
+            interaction.interaction = interactions[index];
+            interaction.userInput = interaction.interaction.querySelector(".userInput");
+            interaction.assistantResponse = interaction.interaction.querySelector(".assistantResponse");
+            return interaction;
+        }
+
+        // Add a new interaction to the list
+        function addInteraction(userInput = "", assistantResponse = "") {
+            const newItem = document.createElement("li");
+            newItem.innerHTML = `
+                <div>
+                    <label for="userInput">User:</label>
+                    <textarea class="userInput">${userInput}</textarea>
+                </div>
+                <div>
+                    <label for="assistantResponse">Assistant:</label>
+                    <textarea class="assistantResponse">${assistantResponse}</textarea>
+                </div>`;
+            document.getElementById('interactions').appendChild(newItem);
+        }
+
+        // Get request data from the form
         function getRequestData() {
             removeEmptyInteractions();
             const requestData = {};
-        requestData.model = document.getElementById("model").value;
+            requestData.model = document.getElementById("model").value;
             requestData.temperature = parseFloat(document.getElementById("temperature").value);
             requestData.top_p = parseFloat(document.getElementById("topP").value);
             requestData.max_tokens = parseInt(document.getElementById("maxTokens").value);
-        requestData.messages = [];
-    requestData.messages.push({"role":"system", "content":document.getElementById('systemInput').value});
+            requestData.messages = [];
+            requestData.messages.push({ "role": "system", "content": document.getElementById('systemInput').value });
 
-const interactions = document.getElementById("interactions").children;
+            const interactions = document.getElementById("interactions").children;
             for (const interaction of interactions) {
                 const userInput = interaction.querySelector(".userInput").value;
                 const assistantResponse = interaction.querySelector(".assistantResponse").value;
@@ -106,13 +142,14 @@ const interactions = document.getElementById("interactions").children;
             return requestData;
         }
 
+        // Send request to OpenAI API
         function sendRequest(data, apiKey) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", "https://api.openai.com/v1/chat/completions");
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
-                xhr.onreadystatechange = function() {
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4) {
                         if (xhr.status === 200) {
                             resolve(JSON.parse(xhr.responseText));
@@ -125,6 +162,7 @@ const interactions = document.getElementById("interactions").children;
             });
         }
 
+        // Export data to a file
         function exportToFile(filename, text) {
             const element = document.createElement("a");
             element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
@@ -135,86 +173,64 @@ const interactions = document.getElementById("interactions").children;
             document.body.removeChild(element);
         }
 
+        // Import data from a file
         function importFromFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     resolve(JSON.parse(event.target.result));
                 };
-                reader.onerror = function(error) {
+                reader.onerror = function (error) {
                     reject(error);
                 };
                 reader.readAsText(file);
             });
         }
 
-    function addInteraction(userInput = "", assistantResponse = ""){
-          const newItem = document.createElement("li");
-                        newItem.innerHTML = `
-                            <div>
-                                <label for="userInput">User:</label>
-                                <textarea class="userInput">${userInput}</textarea>
-                            </div>
-                            <div>
-                                <label for="assistantResponse">Assistant:</label>
-                                <textarea class="assistantResponse">${assistantResponse}</textarea>
-                            </div>`;
-                        document.getElementById('interactions').appendChild(newItem);
-                    }
+        // Toggle section visibility
+        function toggleSection(button, sectionId, storageKey) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle("hidden");
+            button.textContent = section.classList.contains("hidden") ? "+" : "-";
+            localStorage.setItem(storageKey, section.classList.contains("hidden"));
+        }
 
-            function removeEmptyInteractions(){
-const interactions = document.getElementById("interactions").children;
-              if(interactions.length == 1){
-                  return;};
-            for (let i = 1; i < interactions.length; i++) {
-            interaction = getInteraction(i);
-                const userInput = interaction.userInput;
-                const assistantResponse = interaction.assistantResponse;
-            if(!interaction.userInput.value && !interaction.assistantResponse.value){
-                    interaction.interaction.remove();};};}
-
-function getInteraction(index) {
-  const interactions = document.getElementById("interactions").children;
-  const interaction = {};
-  interaction.interaction = interactions[index];
-  interaction.userInput = interaction.interaction.querySelector(".userInput");
-  interaction.assistantResponse = interaction.interaction.querySelector(".assistantResponse");
-  return interaction;
-}
-
-        document.getElementById("submit").addEventListener("click", function() {
+        // Event listeners
+        document.getElementById("submit").addEventListener("click", function () {
             const apiKey = document.getElementById("apiKey").value;
-        if(!apiKey){
-            alert('Please enter API key');
-            return;};
+            if (!apiKey) {
+                alert('Please enter API key');
+                return;
+            }
             const requestData = getRequestData();
-        document.getElementById('submit').disabled = true
+            document.getElementById('submit').disabled = true
             sendRequest(requestData, apiKey)
                 .then(response => {
                     console.log(response);
                     const assistantResponse = response.choices[0].message.content;
-                    lastInteraction = getInteraction(document.getElementById('interactions').children.length-1);
-            if(lastInteraction.assistantResponse.value){
-                addInteraction("", assistantResponse);}
-              else {
-                lastInteraction.assistantResponse.value = assistantResponse;};
+                    const lastInteraction = getInteraction(document.getElementById('interactions').children.length - 1);
+                    if (lastInteraction.assistantResponse.value) {
+                        addInteraction("", assistantResponse);
+                    } else {
+                        lastInteraction.assistantResponse.value = assistantResponse;
+                    }
 
-            addInteraction();
-            document.getElementById('submit').disabled = false
+                    addInteraction();
+                    document.getElementById('submit').disabled = false
                 })
                 .catch(error => {
                     console.error("Error:", error);
-            document.getElementById('submit').disabled = true
+                    document.getElementById('submit').disabled = true
                 });
         });
 
-        document.getElementById("export").addEventListener("click", function() {
+        document.getElementById("export").addEventListener("click", function () {
             const filename = document.getElementById("filename").value;
             const requestData = getRequestData();
             exportToFile(filename, JSON.stringify(requestData));
         });
 
-        document.getElementById("importBtn").addEventListener("click", function() {
+        document.getElementById("importBtn").addEventListener("click", function () {
             const fileInput = document.getElementById("import");
             if (fileInput.files.length === 0) {
                 alert("Please select a file to import.");
@@ -230,12 +246,12 @@ function getInteraction(index) {
                     document.getElementById("temperature").value = requestData.temperature;
                     document.getElementById("topP").value = requestData.top_p;
                     document.getElementById("maxTokens").value = requestData.max_tokens;
-        document.getElementById('systemInput').value = requestData.messages[0].content
+                    document.getElementById('systemInput').value = requestData.messages[0].content
                     const interactionsList = document.getElementById("interactions");
                     interactionsList.innerHTML = "";
 
                     for (let i = 1; i < requestData.messages.length; i += 2) {
-                        addInteraction(requestData.messages[i].content, requestData.messages[i+1].content);
+                        addInteraction(requestData.messages[i].content, requestData.messages[i + 1].content);
                     }
                 })
                 .catch(error => {
@@ -243,32 +259,25 @@ function getInteraction(index) {
                 });
         });
 
-        function toggleSection(button, sectionId, storageKey) {
-            const section = document.getElementById(sectionId);
-            section.classList.toggle("hidden");
-            button.textContent = section.classList.contains("hidden") ? "+" : "-";
-            localStorage.setItem(storageKey, section.classList.contains("hidden"));
-        }
-
-        document.getElementById("toggleInteractions").addEventListener("click", function() {
+        document.getElementById("toggleInteractions").addEventListener("click", function () {
             toggleSection(this, "interactionsContainer", "interactionsCollapsed");
         });
 
-        document.getElementById("toggleParameters").addEventListener("click", function() {
+        document.getElementById("toggleParameters").addEventListener("click", function () {
             toggleSection(this, "parameters", "parametersCollapsed");
         });
 
-        document.getElementById("toggleImportExport").addEventListener("click", function() {
+        document.getElementById("toggleImportExport").addEventListener("click", function () {
             toggleSection(this, "importExport", "importExportCollapsed");
         });
 
-        document.getElementById("showApiKey").addEventListener("change", function() {
+        document.getElementById("showApiKey").addEventListener("change", function () {
             const apiKeyInput = document.getElementById("apiKey");
             apiKeyInput.type = this.checked ? "text" : "password";
             localStorage.setItem("showApiKey", this.checked);
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const apiKey = localStorage.getItem("apiKey");
             if (apiKey) {
                 document.getElementById("apiKey").value = apiKey;
@@ -294,7 +303,7 @@ function getInteraction(index) {
             }
         });
 
-        window.addEventListener("beforeunload", function() {
+        window.addEventListener("beforeunload", function () {
             const apiKey = document.getElementById("apiKey").value;
             localStorage.setItem("apiKey", apiKey);
         });
