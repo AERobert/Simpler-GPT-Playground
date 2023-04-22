@@ -152,6 +152,19 @@
             });
         }
 
+    function addInteraction(userInput = "", assistantResponse = ""){
+          const newItem = document.createElement("li");
+                        newItem.innerHTML = `
+                            <div>
+                                <label for="userInput">User:</label>
+                                <textarea class="userInput">${userInput}</textarea>
+                            </div>
+                            <div>
+                                <label for="assistantResponse">Assistant:</label>
+                                <textarea class="assistantResponse">${assistantResponse}</textarea>
+                            </div>`;
+                        document.getElementById('interactions').appendChild(newItem);
+                    }
         document.getElementById("submit").addEventListener("click", function() {
             const apiKey = document.getElementById("apiKey").value;
         if(!apiKey){
@@ -166,17 +179,7 @@
                     const interactions = document.getElementById("interactions").children;
                     document.querySelectorAll(".assistantResponse")[interactions.length - 1].value = assistantResponse;
 
-                    const newItem = document.createElement("li");
-                    newItem.innerHTML = `
-                        <div>
-                            <label for="userInput">User:</label>
-                            <textarea type="text" class="userInput"></textarea>
-                        </div>
-                        <div>
-                            <label for="assistantResponse">Assistant:</label>
-                            <textarea class="assistantResponse"></textarea>
-                        </div>`;
-                    document.getElementById("interactions").appendChild(newItem);
+            addInteraction();
             document.getElementById('submit').disabled = false
                 })
                 .catch(error => {
@@ -212,17 +215,7 @@
                     interactionsList.innerHTML = "";
 
                     for (let i = 1; i < requestData.messages.length; i += 2) {
-                        const newItem = document.createElement("li");
-                        newItem.innerHTML = `
-                            <div>
-                                <label for="userInput">User:</label>
-                                <textarea class="userInput">${requestData.messages[i].content}</textarea>
-                            </div>
-                            <div>
-                                <label for="assistantResponse">Assistant:</label>
-                                <textarea class="assistantResponse">${requestData.messages[i + 1].content}</textarea>
-                            </div>`;
-                        interactionsList.appendChild(newItem);
+                        addInteraction(requestData.messages[i].content, requestData.messages[i+1].content);
                     }
                 })
                 .catch(error => {
