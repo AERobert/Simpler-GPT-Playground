@@ -85,6 +85,7 @@
 
     <script>
         function getRequestData() {
+            removeEmptyInteractions();
             const requestData = {};
         requestData.model = document.getElementById("model").value;
             requestData.temperature = parseFloat(document.getElementById("temperature").value);
@@ -167,16 +168,19 @@ const interactions = document.getElementById("interactions").children;
                   return;};
             for (let i = 1; i < interactions.length; i++) {
             interaction = getInteraction(i);
-                const userInput = interaction[0];
-                const assistantResponse = interaction[1];
-            if(interaction.every(field >= !field)){
-                    interaction.remove();};};}
+                const userInput = interaction.userInput;
+                const assistantResponse = interaction.assistantResponse;
+            if(!interaction.userInput.value && !interaction.assistantResponse.value){
+                    interaction.interaction.remove();};};}
 
-    function getInteraction(index){
-        const interactions = document.getElementById("interactions").children;
-        const userInput = interactions[index].querySelector(".userInput").value;
-                const assistantResponse = interactions[index].querySelector(".assistantResponse").value;
-return [userInput, assistantResponse];}
+function getInteraction(index) {
+  const interactions = document.getElementById("interactions").children;
+  const interaction = {};
+  interaction.interaction = interactions[index];
+  interaction.userInput = interaction.interaction.querySelector(".userInput");
+  interaction.assistantResponse = interaction.interaction.querySelector(".assistantResponse");
+  return interaction;
+}
 
         document.getElementById("submit").addEventListener("click", function() {
             const apiKey = document.getElementById("apiKey").value;
@@ -189,8 +193,10 @@ return [userInput, assistantResponse];}
                 .then(response => {
                     console.log(response);
                     const assistantResponse = response.choices[0].message.content;
-                    const interactions = document.getElementById ("interactions").children;
-                    document.querySelectorAll(".assistantResponse")[interactions.length - 1].value = assistantResponse;
+                    lastInteraction = getInteraction(document.getElementById('interactions').children.length-1);
+            if(lastInteraction.assistantResponse.value){
+                addInteraction();};
+              lastInteraction.assistantResponse.value = assistantResponse;;
 
             addInteraction();
             document.getElementById('submit').disabled = false
