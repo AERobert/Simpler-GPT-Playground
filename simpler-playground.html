@@ -24,11 +24,11 @@
                 <li>
                     <div>
                         <label for="userInput">User:</label>
-                        <textarea class="userInput"></textarea>
+                        <textarea class="userInput" col=120></textarea>
                     </div>
                     <div>
                         <label for="assistantResponse">Assistant:</label>
-                        <textarea class="assistantResponse"></textarea>
+                        <textarea class="assistantResponse" col=120></textarea>
                     </div>
                 </li>
             </ol>
@@ -53,15 +53,15 @@
             </div>
             <div>
                 <label for="temperature">Temperature:</label>
-                <input type="number" id="temperature" value="0.7">
+                <input type="number" min=0 max=1 step=0.01 id="temperature" value="0.7">
             </div>
             <div>
                 <label for="topP">Top P:</label>
-                <input type="number" id="topP" value="1">
+                <input type="number" min=0 max=1 step=0.01 id="topP" value="1">
             </div>
             <div>
                 <label for="maxTokens">Max Tokens:</label>
-                <input type="number" id="maxTokens" value="256">
+                <input type="number" min=1 max=256 id="maxTokens" value="256">
             </div>
         </div>
     </div>
@@ -110,11 +110,11 @@
             newItem.innerHTML = `
                 <div>
                     <label for="userInput">User:</label>
-                    <textarea class="userInput">${userInput}</textarea>
+                    <textarea class="userInput" col=120>${userInput}</textarea>
                 </div>
                 <div>
                     <label for="assistantResponse">Assistant:</label>
-                    <textarea class="assistantResponse">${assistantResponse}</textarea>
+                    <textarea class="assistantResponse" col=120>${assistantResponse}</textarea>
                 </div>`;
             document.getElementById('interactions').appendChild(newItem);
         }
