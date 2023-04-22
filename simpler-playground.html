@@ -195,8 +195,9 @@ function getInteraction(index) {
                     const assistantResponse = response.choices[0].message.content;
                     lastInteraction = getInteraction(document.getElementById('interactions').children.length-1);
             if(lastInteraction.assistantResponse.value){
-                addInteraction();};
-              lastInteraction.assistantResponse.value = assistantResponse;;
+                addInteraction("", assistantResponse);}
+              else {
+                lastInteraction.assistantResponse.value = assistantResponse;};
 
             addInteraction();
             document.getElementById('submit').disabled = false
