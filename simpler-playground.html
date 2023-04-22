@@ -158,7 +158,7 @@
             alert('Please enter API key');
             return;};
             const requestData = getRequestData();
-
+        document.getElementById('submit').disabled = true
             sendRequest(requestData, apiKey)
                 .then(response => {
                     console.log(response);
@@ -177,9 +177,11 @@
                             <textarea class="assistantResponse"></textarea>
                         </div>`;
                     document.getElementById("interactions").appendChild(newItem);
+            document.getElementById('submit').disabled = false
                 })
                 .catch(error => {
                     console.error("Error:", error);
+            document.getElementById('submit').disabled = true
                 });
         });
 
