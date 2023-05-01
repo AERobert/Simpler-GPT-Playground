@@ -24,11 +24,11 @@
                 <li>
                     <div>
                         <label for="userInput">User:</label>
-                        <textarea class="userInput" rows="5" col="120"></textarea>
+                        <textarea class="userInput" col=120></textarea>
                     </div>
                     <div>
                         <label for="assistantResponse">Assistant:</label>
-                        <textarea class="assistantResponse" rows="5" col="120"></textarea>
+                        <textarea class="assistantResponse" col=120></textarea>
                     </div>
                 </li>
             </ol>
@@ -111,11 +111,11 @@
             newItem.innerHTML = `
                 <div>
                     <label for="userInput">User:</label>
-                    <textarea class="userInput" rows="5" col="120">${userInput}</textarea>
+                    <textarea class="userInput" col=120>${userInput}</textarea>
                 </div>
                 <div>
                     <label for="assistantResponse">Assistant:</label>
-                    <textarea class="assistantResponse" rows="5" col="120">${assistantResponse}</textarea>
+                    <textarea class="assistantResponse" col=120>${assistantResponse}</textarea>
                 </div>`;
             document.getElementById('interactions').appendChild(newItem);
         }
