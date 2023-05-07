@@ -79,7 +79,9 @@
     </div>
 
     <script>
-        // Remove empty interactions from the list
+        // global variables
+				let currentRequestController;
+				// Remove empty interactions from the list
         function removeEmptyInteractions() {
             const interactions = document.getElementById("interactions").children;
             if (interactions.length === 1) {
@@ -144,25 +146,36 @@
         }
 
         // Send request to OpenAI API
-        function sendRequest(data, apiKey) {
-            return new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "https://api.openai.com/v1/chat/completions");
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            resolve(JSON.parse(xhr.responseText));
-                        } else {
-                            reject(xhr.status);
-                        }
-                    }
-                };
-                xhr.send(JSON.stringify(data));
-            });
-        }
+        function sendRequest(data, apiKey, requestAbortController) {
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", `Bearer ${apiKey}`);
 
+    const requestOptions = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(data),
+        signal: requestAbortController.signal
+    };
+
+    return fetch("https://api.openai.com/v1/chat/completions", requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.status);
+					cancelRequest(requestAbortController);
+            }
+        });
+}
+function cancelRequest(requestAbortController) {
+  if (!requestAbortController.signal.aborted) {
+    requestAbortController.abort();
+    document.getElementById('submit').disabled = false;
+    document.getElementById('cancel').disabled = true;
+    console.log('Request Aborted');
+  }
+}
         // Export data to a file
         function exportToFile(filename, text) {
             const element = document.createElement("a");
@@ -197,36 +210,41 @@
         }
 
         // Event listeners
-        document.getElementById("submit").addEventListener("click", function () {
-            const apiKey = document.getElementById("apiKey").value;
-            if (!apiKey) {
-                alert('Please enter API key');
-                return;
-            }
-            const requestData = getRequestData();
-            document.getElementById('submit').disabled = true
-            sendRequest(requestData, apiKey)
-                .then(response => {
-                    console.log(response);
-                    const assistantResponse = response.choices[0].message.content;
-            removeEmptyInteractions();
-                    const lastInteraction = getInteraction(document.getElementById('interactions').children.length - 1);
-                    if (lastInteraction.assistantResponse.value) {
-                        addInteraction("", assistantResponse);
-                    } else {
-                        lastInteraction.assistantResponse.value = assistantResponse;
-                    }
+document.getElementById("submit").addEventListener("click", async function () {
+    const apiKey = document.getElementById("apiKey").value;
+    if (!apiKey) {
+        alert('Please enter API key');
+        return;
+    }
+    const requestData = getRequestData();
+    document.getElementById('submit').disabled = true;
+    document.getElementById('cancel').disabled = false;
+    try {
+        currentRequestController = new AbortController();
+        const response = await sendRequest(requestData, apiKey, currentRequestController);
+        console.log(response);
+        const assistantResponse = response.choices[0].message.content;
+        removeEmptyInteractions();
+        const lastInteraction = getInteraction(document.getElementById('interactions').children.length - 1);
+        if (lastInteraction.assistantResponse.value) {
+            addInteraction("", assistantResponse);
+        } else {
+            lastInteraction.assistantResponse.value = assistantResponse;
+        }
+        addInteraction();
+        document.getElementById('submit').disabled = false;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            return;
+        } 
+        console.error("Error:", error);
+    }
+});
 
-                    addInteraction();
-                    document.getElementById('submit').disabled = false
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    document.getElementById('submit').disabled = true
-                });
-        });
-
-        document.getElementById("export").addEventListener("click", function () {
+        document.getElementById('cancel').addEventListener("click", () =>{
+					cancelRequest(currentRequestController);
+				});
+				document.getElementById("export").addEventListener("click", function () {
             const filename = document.getElementById("filename").value;
             removeEmptyInteractions();
             const requestData = getRequestData();
