@@ -163,8 +163,8 @@
             if (response.ok) {
                 return response.json();
             } else {
-                throw new Error(response.status);
 					cancelRequest(requestAbortController);
+                throw new Error(response.status);
             }
         });
 }
