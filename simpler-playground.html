@@ -73,8 +73,22 @@
             <label for="filename">Filename:</label>
             <input type="text" id="filename" value="requestData.json">
             <button id="export">Export</button>
+<button id="indexedDB_save">save</button>
             <input type="file" id="import">
             <button id="importBtn">Import</button>
+<h3>Saved requests</h3>
+
+<div id="indexedDB_store">
+	<!-- File list popup menu -->
+	<div id="file-list">
+		<select id="file-select"></select>
+	</div>
+
+	<!-- Download button -->
+	<button id="download-button">Download Selected File</button>
+	<!-- Delete button -->
+	<button id="delete-button">Delete Selected File</button>
+</div>
         </div>
     </div>
 
@@ -208,6 +222,7 @@ function cancelRequest(requestAbortController) {
             button.textContent = section.classList.contains("hidden") ? "+" : "-";
             localStorage.setItem(storageKey, section.classList.contains("hidden"));
         }
+// Indexdb code
 
         // Event listeners
 document.getElementById("submit").addEventListener("click", async function () {
