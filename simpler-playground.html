@@ -81,13 +81,13 @@
 <div id="indexedDB_store">
 	<!-- File list popup menu -->
 	<div id="file-list">
-		<select id="file-select"></select>
+		<select id="request-select"></select>
 	</div>
 
 	<!-- Download button -->
-	<button id="download-button">Download Selected File</button>
+	<button id="indexedDB_import">Import</button>
 	<!-- Delete button -->
-	<button id="delete-button">Delete Selected File</button>
+	<button id="indexedDB_delete">Delete</button>
 </div>
         </div>
     </div>
@@ -344,5 +344,6 @@ document.getElementById("submit").addEventListener("click", async function () {
             localStorage.setItem("apiKey", apiKey);
         });
     </script>
+		<script src="indexedDB.js"></script>
 </body>
 </html>
