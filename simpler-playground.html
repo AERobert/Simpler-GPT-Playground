@@ -159,6 +159,19 @@
             return requestData;
         }
 
+		function revertRequest(requestData){
+document.getElementById("model").value = requestData.model;
+                    document.getElementById("temperature").value = requestData.temperature;
+                    document.getElementById("topP").value = requestData.top_p;
+                    document.getElementById("maxTokens").value = requestData.max_tokens;
+                    document.getElementById('systemInput').value = requestData.messages[0].content
+                    const interactionsList = document.getElementById("interactions");
+                    interactionsList.innerHTML = "";
+
+                    for (let i = 1; i < requestData.messages.length; i += 2) {
+                        addInteraction(requestData.messages[i].content, requestData.messages[i + 1].content);
+		}
+	}
         // Send request to OpenAI API
         function sendRequest(data, apiKey, requestAbortController) {
     const headers = new Headers();
@@ -247,7 +260,8 @@ document.getElementById("submit").addEventListener("click", async function () {
             lastInteraction.assistantResponse.value = assistantResponse;
         }
         addInteraction();
-        document.getElementById('submit').disabled = false;
+        document.getElementById('cancel').disabled = true;
+    document.getElementById('submit').disabled = false;
     } catch (error) {
         if (error.name === 'AbortError') {
             return;
@@ -277,18 +291,7 @@ document.getElementById("submit").addEventListener("click", async function () {
             importFromFile(file)
                 .then(data => {
                     requestData = data;
-
-                    document.getElementById("model").value = requestData.model;
-                    document.getElementById("temperature").value = requestData.temperature;
-                    document.getElementById("topP").value = requestData.top_p;
-                    document.getElementById("maxTokens").value = requestData.max_tokens;
-                    document.getElementById('systemInput').value = requestData.messages[0].content
-                    const interactionsList = document.getElementById("interactions");
-                    interactionsList.innerHTML = "";
-
-                    for (let i = 1; i < requestData.messages.length; i += 2) {
-                        addInteraction(requestData.messages[i].content, requestData.messages[i + 1].content);
-                    }
+			revertRequest(requestData);
                 })
                 .catch(error => {
                     console.error("Error:", error);
